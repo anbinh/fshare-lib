@@ -1,0 +1,18 @@
+<?php
+// @codingStandardsIgnoreFile
+
+/**
+ * Following constant definitions are just to bypass IDE notices about constants.
+ * Please define test constants in phpunit.xml instead.
+ */
+defined('FSHARE_TEST_EMAIL') or define('FSHARE_TEST_EMAIL', '');
+defined('FSHARE_TEST_PASSWORD') or define('FSHARE_TEST_PASSWORD', '');
+defined('FSHARE_TEST_FILE_URL') or define('FSHARE_TEST_FILE_URL', '');
+defined('FSHARE_TEST_FILE_EXPECTED_NAME') or define('FSHARE_TEST_FILE_EXPECTED_NAME', '');
+defined('FSHARE_TEST_FOLDER_URL') or define('FSHARE_TEST_FOLDER_URL', '');
+defined('FSHARE_TEST_FOLDER_EXPECTED_NAME') or define('FSHARE_TEST_FOLDER_EXPECTED_NAME', '');
+defined('FSHARE_TEST_FOLDER_EXPECTED_NUMBER_OF_FILES') or define('FSHARE_TEST_FOLDER_EXPECTED_NUMBER_OF_FILES', '');
+defined('FSHARE_TEST_FOLDER_EXPECTED_FIRST_FILE_URL') or define('FSHARE_TEST_FOLDER_EXPECTED_FIRST_FILE_URL', '');
+defined('FSHARE_TEST_FOLDER_EXPECTED_FIRST_FILE_NAME') or define('FSHARE_TEST_FOLDER_EXPECTED_FIRST_FILE_NAME', '');
+defined('FSHARE_TEST_FOLDER_EXPECTED_LAST_FILE_URL') or define('FSHARE_TEST_FOLDER_EXPECTED_LAST_FILE_URL', '');
+defined('FSHARE_TEST_FOLDER_EXPECTED_LAST_FILE_NAME') or define('FSHARE_TEST_FOLDER_EXPECTED_LAST_FILE_NAME', '');
