@@ -1,0 +1,6 @@
+phpunit:
+  image: phpunit/phpunit
+  volumes:
+    - .:/app
+  working_dir: /app
+  command: "/app/tests"

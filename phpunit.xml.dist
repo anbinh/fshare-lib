@@ -1,0 +1,39 @@
+<phpunit bootstrap="vendor/autoload.php" colors="true" verbose="true">
+    <php>
+        <const name="FSHARE_TEST_EMAIL" value="" />
+        <const name="FSHARE_TEST_PASSWORD" value="" />
+        <const name="FSHARE_TEST_FILE_URL" value="" />
+        <const name="FSHARE_TEST_FILE_EXPECTED_NAME" value="" />
+        <const name="FSHARE_TEST_FOLDER_URL" value="" />
+        <const name="FSHARE_TEST_FOLDER_EXPECTED_NAME" value="" />
+        <const name="FSHARE_TEST_FOLDER_EXPECTED_NUMBER_OF_FILES" value="" />
+        <const name="FSHARE_TEST_FOLDER_EXPECTED_FIRST_FILE_URL" value="" />
+        <const name="FSHARE_TEST_FOLDER_EXPECTED_FIRST_FILE_NAME" value="" />
+        <const name="FSHARE_TEST_FOLDER_EXPECTED_LAST_FILE_URL" value="" />
+        <const name="FSHARE_TEST_FOLDER_EXPECTED_LAST_FILE_NAME" value="" />
+    </php>
+
+    <testsuites>
+        <testsuite name="unit">
+            <directory suffix="Test.php">tests/unit</directory>
+        </testsuite>
+        <testsuite name="functional">
+            <directory suffix="Test.php">tests/functional</directory>
+        </testsuite>
+        <testsuite name="all">
+            <directory suffix="Test.php">tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <logging>
+        <log type="coverage-html" target="build/coverage"/>
+        <log type="coverage-clover" target="build/clover.xml"/>
+        <log type="coverage-text" target="php://stdout" showOnlySummary="true"/>
+    </logging>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src</directory>
+        </whitelist>
+    </filter>
+</phpunit>
