@@ -49,7 +49,7 @@ class HtmlBasedFileFetcherTest extends \PHPUnit_Framework_TestCase
     /**
      * Testing...
      *
-     * @expectedException \Ndthuan\FshareLib\HtmlClient\DownloadNotFoundException
+     * @expectedException \Ndthuan\FshareLib\HtmlClient\DownloadFormNotFoundException
      * @expectedExceptionMessage Download form not found
      */
     public function testFetchDownloadableUrlIfNoDownloadFormIsPresented()
@@ -69,7 +69,7 @@ class HtmlBasedFileFetcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Ndthuan\FshareLib\HtmlClient\DownloadNotFoundException
+     * @expectedException \Ndthuan\FshareLib\HtmlClient\DownloadUrlNotFoundException
      * @expectedExceptionMessage Download URL not found
      */
     public function testFetchDownloadableUrlIfDownloadFormIsPresentedButDownloadInfoIsNotAvailable()
@@ -91,7 +91,7 @@ XXX;
     }
 
     /**
-     * @throws DownloadNotFoundException
+     * @throws DownloadFormNotFoundException
      */
     public function testFetchDownloadableUrlWhenDownloadFormAndDownloadInfoAreAvailable()
     {

@@ -79,12 +79,12 @@ class HtmlBasedFileFetcher implements FileFetcherInterface
      *
      * @param DomNode $filePageDom
      *
-     * @throws DownloadNotFoundException
+     * @throws DownloadFormNotFoundException
      */
     private function preventInvalidFilePage(DomNode $filePageDom)
     {
         if ($filePageDom->query('#download-form')->count() < 1) {
-            throw new DownloadNotFoundException('Download form not found');
+            throw new DownloadFormNotFoundException('Download form not found');
         }
     }
 
@@ -93,7 +93,7 @@ class HtmlBasedFileFetcher implements FileFetcherInterface
      *
      * @return string
      *
-     * @throws DownloadNotFoundException
+     * @throws DownloadUrlNotFoundException
      */
     private function fetchDownloadUrl(DomNode $filePageDom)
     {
@@ -103,7 +103,7 @@ class HtmlBasedFileFetcher implements FileFetcherInterface
         );
 
         if (!isset($downloadInfo['url'])) {
-            throw new DownloadNotFoundException('Download URL not found');
+            throw new DownloadUrlNotFoundException('Download URL not found');
         }
 
         return $downloadInfo['url'];
