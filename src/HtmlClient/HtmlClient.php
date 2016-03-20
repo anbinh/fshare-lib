@@ -3,6 +3,8 @@
 namespace Ndthuan\FshareLib\HtmlClient;
 
 use Ndthuan\FshareLib\Api\DTO\DownloadableUrl;
+use Ndthuan\FshareLib\Api\DTO\FshareFile;
+use Ndthuan\FshareLib\Api\DTO\FshareFolder;
 use Ndthuan\FshareLib\Api\FileFetcherInterface;
 use Ndthuan\FshareLib\Api\FolderFetcherInterface;
 use Ndthuan\FshareLib\Api\FshareClientInterface;
@@ -72,5 +74,25 @@ class HtmlClient implements FshareClientInterface
         }
 
         return $downloadableUrls;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function fetchFileInfo($fileUrl)
+    {
+        return $this->fileFetcher->fetchFileInfo($fileUrl);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function fetchFolderOrFileInfo($url)
+    {
+        if (false !== strpos($url, '/folder/')) {
+            return $this->fetchFolderInfo($url);
+        }
+
+        return $this->fetchFileInfo($url);
     }
 }

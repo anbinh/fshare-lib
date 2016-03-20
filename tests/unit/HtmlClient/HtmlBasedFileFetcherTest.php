@@ -49,7 +49,7 @@ class HtmlBasedFileFetcherTest extends \PHPUnit_Framework_TestCase
     /**
      * Testing...
      *
-     * @expectedException \Ndthuan\FshareLib\HtmlClient\DownloadNotFoundException
+     * @expectedException \Ndthuan\FshareLib\HtmlClient\DownloadFormNotFoundException
      * @expectedExceptionMessage Download form not found
      */
     public function testFetchDownloadableUrlIfNoDownloadFormIsPresented()
@@ -69,7 +69,7 @@ class HtmlBasedFileFetcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Ndthuan\FshareLib\HtmlClient\DownloadNotFoundException
+     * @expectedException \Ndthuan\FshareLib\HtmlClient\DownloadUrlNotFoundException
      * @expectedExceptionMessage Download URL not found
      */
     public function testFetchDownloadableUrlIfDownloadFormIsPresentedButDownloadInfoIsNotAvailable()
@@ -91,7 +91,7 @@ XXX;
     }
 
     /**
-     * @throws DownloadNotFoundException
+     * @throws DownloadFormNotFoundException
      */
     public function testFetchDownloadableUrlWhenDownloadFormAndDownloadInfoAreAvailable()
     {
@@ -116,6 +116,29 @@ XXX;
         static::assertEquals('http://download.url', $downloadableUrl->getUrl());
         static::assertEquals($fileUrl, $downloadableUrl->getFile()->getUrl());
         static::assertEquals('My Awesome File', $downloadableUrl->getFile()->getName());
+    }
+
+    public function testFetchFileInfo()
+    {
+        $fileUrl = 'http://www.fshare.vn/file/DummyFile/';
+        $pageRequest = new Request('GET', $fileUrl);
+
+        $this->clientMock
+            ->expects(static::once())
+            ->method('send')
+            ->with($pageRequest)
+            ->willReturn(
+                new Response(
+                    200,
+                    [],
+                    '<div class="file-info"><div>The file name</div><div>Noisy text</div></div>'
+                )
+            );
+        $this->requestDecoratorMock->expects(static::once())->method('decorate')->willReturnArgument(0);
+
+        $file = $this->testObject->fetchFileInfo($fileUrl);
+        static::assertEquals($fileUrl, $file->getUrl());
+        static::assertEquals('The file name', $file->getName());
     }
 
     /**

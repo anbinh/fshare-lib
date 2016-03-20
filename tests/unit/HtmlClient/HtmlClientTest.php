@@ -91,4 +91,37 @@ class HtmlClientTest extends \PHPUnit_Framework_TestCase
 
         $this->testObject->fetchFolderInfo('dummy.url');
     }
+
+    public function testFetchFileInfo()
+    {
+        $this->fileFetcher
+            ->expects(static::once())
+            ->method('fetchFileInfo');
+
+        $this->testObject->fetchFileInfo('dummy.url');
+    }
+
+    public function testFetchFolderOrFileInfoWhenFolderUrlIsProvided()
+    {
+        $this->folderFetcher
+            ->expects(static::once())
+            ->method('fetchFolderInfo');
+        $this->fileFetcher
+            ->expects(static::never())
+            ->method('fetchFileInfo');
+
+        $this->testObject->fetchFolderOrFileInfo('http://folder/dummy.url');
+    }
+
+    public function testFetchFolderOrFileInfoWhenFolderUrlIsNotProvided()
+    {
+        $this->folderFetcher
+            ->expects(static::never())
+            ->method('fetchFolderInfo');
+        $this->fileFetcher
+            ->expects(static::once())
+            ->method('fetchFileInfo');
+
+        $this->testObject->fetchFolderOrFileInfo('http://file/dummy.url');
+    }
 }
