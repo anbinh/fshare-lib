@@ -118,6 +118,29 @@ XXX;
         static::assertEquals('My Awesome File', $downloadableUrl->getFile()->getName());
     }
 
+    public function testFetchFileInfo()
+    {
+        $fileUrl = 'http://www.fshare.vn/file/DummyFile/';
+        $pageRequest = new Request('GET', $fileUrl);
+
+        $this->clientMock
+            ->expects(static::once())
+            ->method('send')
+            ->with($pageRequest)
+            ->willReturn(
+                new Response(
+                    200,
+                    [],
+                    '<div class="file-info"><div>The file name</div><div>Noisy text</div></div>'
+                )
+            );
+        $this->requestDecoratorMock->expects(static::once())->method('decorate')->willReturnArgument(0);
+
+        $file = $this->testObject->fetchFileInfo($fileUrl);
+        static::assertEquals($fileUrl, $file->getUrl());
+        static::assertEquals('The file name', $file->getName());
+    }
+
     /**
      * @param string $fileUrl
      * @param string $downloadFormHtml

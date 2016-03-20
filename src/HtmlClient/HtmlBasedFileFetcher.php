@@ -56,25 +56,87 @@ class HtmlBasedFileFetcher implements FileFetcherInterface
     {
         $this->authenticator->authenticate($this->httpClient);
         $filePageDom = $this->requestFilePageDom($fileUrl);
-        $fileName = trim($filePageDom->query('.file-info div:first-child')->text());
-        $file = new FshareFile($fileUrl, $fileName);
+        $this->preventInvalidFilePage($filePageDom);
 
+        return new DownloadableUrl(
+            $this->fetchDownloadUrl($filePageDom),
+            new FshareFile($fileUrl, $this->fetchFileName($filePageDom))
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function fetchFileInfo($fileUrl)
+    {
+        $filePageDom = $this->requestFilePageDom($fileUrl);
+
+        return new FshareFile($fileUrl, $this->fetchFileName($filePageDom));
+    }
+
+    /**
+     * Validate check throw exceptions if the page DOM is not eligible.
+     *
+     * @param DomNode $filePageDom
+     *
+     * @throws DownloadNotFoundException
+     */
+    private function preventInvalidFilePage(DomNode $filePageDom)
+    {
         if ($filePageDom->query('#download-form')->count() < 1) {
             throw new DownloadNotFoundException('Download form not found');
         }
+    }
 
-        $csrfToken = $filePageDom->query('#download-form [name=fs_csrf]')->val();
-        $fileCode = $filePageDom->query('#DownloadForm_linkcode')->val();
-        $downloadInfo = $this->requestDownloadInfo($fileCode, $csrfToken);
+    /**
+     * @param DomNode $filePageDom
+     *
+     * @return string
+     *
+     * @throws DownloadNotFoundException
+     */
+    private function fetchDownloadUrl(DomNode $filePageDom)
+    {
+        $downloadInfo = $this->requestDownloadInfo(
+            $this->fetchFileLinkCode($filePageDom),
+            $this->fetchCsrfToken($filePageDom)
+        );
 
         if (!isset($downloadInfo['url'])) {
             throw new DownloadNotFoundException('Download URL not found');
         }
 
-        return new DownloadableUrl(
-            $downloadInfo['url'],
-            $file
-        );
+        return $downloadInfo['url'];
+    }
+
+    /**
+     * @param DomNode $filePageDom
+     *
+     * @return string
+     */
+    private function fetchFileName(DomNode $filePageDom)
+    {
+        return trim($filePageDom->query('.file-info div:first-child')->text());
+    }
+
+    /**
+     * @param DomNode $filePageDom
+     *
+     * @return string
+     */
+    private function fetchCsrfToken(DomNode $filePageDom)
+    {
+        return $filePageDom->query('#download-form [name=fs_csrf]')->val();
+    }
+
+    /**
+     * @param DomNode $filePageDom
+     *
+     * @return string
+     */
+    private function fetchFileLinkCode(DomNode $filePageDom)
+    {
+        return $filePageDom->query('#DownloadForm_linkcode')->val();
     }
 
     /**

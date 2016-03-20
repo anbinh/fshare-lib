@@ -51,4 +51,12 @@ class HtmlBasedFileFetcherTest extends \PHPUnit_Framework_TestCase
     {
         $this->fileFetcher->fetchDownloadableUrl('http://www.fshare.vn/');
     }
+
+    public function testFetchFileInfo()
+    {
+        $file = $this->fileFetcher->fetchFileInfo(FSHARE_TEST_FILE_URL);
+
+        static::assertEquals(FSHARE_TEST_FILE_URL, $file->getUrl());
+        static::assertEquals(FSHARE_TEST_FILE_EXPECTED_NAME, $file->getName());
+    }
 }
