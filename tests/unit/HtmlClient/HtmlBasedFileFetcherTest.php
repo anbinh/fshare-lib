@@ -164,7 +164,7 @@ XXX;
             ->expects(static::exactly(2))
             ->method('send')
             ->withConsecutive(
-                [$pageRequest, []],
+                [$pageRequest, ['allow_redirects' => false]],
                 [$downloadInfoRequest, $downloadInfoOptions]
             )
             ->willReturnOnConsecutiveCalls(

@@ -5,12 +5,13 @@ namespace Ndthuan\FshareLib\HtmlClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use Ndthuan\FshareLib\Api\DTO\DownloadableUrl;
-use Ndthuan\FshareLib\Api\FileFetcherInterface;
 use Ndthuan\FshareLib\Api\DTO\FshareFile;
+use Ndthuan\FshareLib\Api\FileFetcherInterface;
 use Ndthuan\FshareLib\HtmlClient\Auth\AuthenticatorInterface;
 use Ndthuan\FshareLib\HtmlClient\RequestDecorator\RequestDecoratorInterface;
 use pQuery;
 use pQuery\DomNode;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Fetches downloadable file URL from an HTML page.
@@ -55,13 +56,20 @@ class HtmlBasedFileFetcher implements FileFetcherInterface
     public function fetchDownloadableUrl($fileUrl)
     {
         $this->authenticator->authenticate($this->httpClient);
-        $filePageDom = $this->requestFilePageDom($fileUrl);
-        $this->preventInvalidFilePage($filePageDom);
 
-        return new DownloadableUrl(
-            $this->fetchDownloadUrl($filePageDom),
-            new FshareFile($fileUrl, $this->fetchFileName($filePageDom))
-        );
+        $response = $this->requestFilePage($fileUrl);
+
+        if ($this->isDirectDownload($response)) {
+            $downloadUrl = $response->getHeaderLine('location');
+            $fshareFile = new FshareFile($fileUrl, basename(urldecode($downloadUrl)));
+        } else {
+            $filePageDom = $this->parseFilePageDom($response);
+            $this->preventInvalidFilePage($filePageDom);
+            $downloadUrl = $this->fetchDownloadUrl($filePageDom);
+            $fshareFile = new FshareFile($fileUrl, $this->fetchFileName($filePageDom));
+        }
+
+        return new DownloadableUrl($downloadUrl, $fshareFile);
     }
 
     /**
@@ -69,9 +77,17 @@ class HtmlBasedFileFetcher implements FileFetcherInterface
      */
     public function fetchFileInfo($fileUrl)
     {
-        $filePageDom = $this->requestFilePageDom($fileUrl);
+        $response = $this->requestFilePage($fileUrl);
 
-        return new FshareFile($fileUrl, $this->fetchFileName($filePageDom));
+        if ($this->isDirectDownload($response)) {
+            $downloadUrl = $response->getHeaderLine('location');
+            $fshareFile = new FshareFile($fileUrl, basename(urldecode($downloadUrl)));
+        } else {
+            $filePageDom = $this->parseFilePageDom($response);
+            $fshareFile = new FshareFile($fileUrl, $this->fetchFileName($filePageDom));
+        }
+
+        return $fshareFile;
     }
 
     /**
@@ -142,14 +158,36 @@ class HtmlBasedFileFetcher implements FileFetcherInterface
     /**
      * @param string $fileUrl
      *
-     * @return DomNode
+     * @return ResponseInterface
      */
-    private function requestFilePageDom($fileUrl)
+    private function requestFilePage($fileUrl)
     {
         $request = $this->requestDecorator->decorate(new Request('GET', $fileUrl));
-        $html = $this->httpClient->send($request)->getBody()->getContents();
+
+        return $this->httpClient->send($request, ['allow_redirects' => false]);
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @return DomNode
+     */
+    private function parseFilePageDom(ResponseInterface $response)
+    {
+        $html = $response->getBody()->getContents();
 
         return pQuery::parseStr($html);
+    }
+
+    /**
+     * @param ResponseInterface $filePageResponse
+     *
+     * @return bool
+     */
+    private function isDirectDownload(ResponseInterface $filePageResponse)
+    {
+        return in_array($filePageResponse->getStatusCode(), [301, 302])
+            && $filePageResponse->hasHeader('location')
+            && preg_match('#^https?://download#', $filePageResponse->getHeaderLine('location'));
     }
 
     /**
