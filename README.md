@@ -11,6 +11,3 @@ Please check functional tests at https://github.com/ndthuan/fshare-lib/tree/mast
 
 # Guzzle Configs
 You might want to read more about https://github.com/guzzle/guzzle to adjust its configurations per your needs, eg. change default HTTP user-agent, configure a cookie file...
-
-# Limitation
-Currently this library only supports *free accounts* at fshare.vn. Please help on forking and making pull requests to add support for VIP accounts!
